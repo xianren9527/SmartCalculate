@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Calculator, Brain, History, Backspace } from 'lucide-react';
+import { Calculator, Brain, History, Delete } from 'lucide-react';
 import * as math from 'mathjs';
 
+// 使用环境变量获取API密钥
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
 
 function App() {
@@ -129,12 +130,12 @@ function App() {
                   ? 'bg-blue-500 text-white hover:bg-blue-600'
                   : btn === 'C'
                     ? 'bg-red-500 text-white hover:bg-red-600'
-                    : btn === 'backspace'
+                  : btn === 'backspace'
                       ? 'bg-yellow-500 text-white hover:bg-yellow-600 col-span-3'
                       : 'bg-gray-200 hover:bg-gray-300'
               }`}
             >
-              {btn === 'backspace' ? <Backspace className="mx-auto" size={20} /> : btn}
+              {btn === 'backspace' ? <Delete className="mx-auto" size={20} /> : btn}
             </button>
           ))}
         </div>
