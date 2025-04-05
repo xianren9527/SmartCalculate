@@ -3,7 +3,7 @@ import { Calculator, Brain, History, Delete } from 'lucide-react';
 import * as math from 'mathjs';
 
 // 使用环境变量获取API密钥
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
+const OPENROUTER_API_KEY = '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';
 
 function App() {
   const [input, setInput] = useState('');
@@ -20,7 +20,7 @@ function App() {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Authorization': 'Bearer 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',
           'Content-Type': 'application/json',
           'HTTP-Referer': 'https://xianren9527.github.io/SmartCalculate/',
           'X-Title': 'Smart Calculator'
