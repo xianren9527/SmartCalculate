@@ -3,7 +3,7 @@ import { Calculator, Brain, History, Delete } from 'lucide-react';
 import * as math from 'mathjs';
 
 // 使用环境变量获取API密钥
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
 
 function App() {
   const [input, setInput] = useState('');
@@ -15,6 +15,8 @@ function App() {
 
   const processWithAI = async (text: string) => {
     try {
+      console.log('Starting API request with key:', OPENROUTER_API_KEY ? 'Key exists' : 'No API key');
+      
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -44,15 +46,51 @@ function App() {
         })
       });
 
-      const data = await response.json();
-      const expression = data.choices[0].message.content.trim();
+      console.log('API response status:', response.status);
       
-      if (!expression) {
-        return 'Could not parse the mathematical expression';
+      const data = await response.json();
+      console.log('API response data:', data);
+      
+      if (!response.ok) {
+        console.error('API error:', data);
+        return `Error: ${data.error?.message || 'Unknown API error'}`;
       }
+      
+      // 尝试多种方式解析API响应
+      let expression = '';
+      try {
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+          expression = data.choices[0].message.content?.trim();
+        } else if (data.candidates && data.candidates[0]) {
+          expression = data.candidates[0].content?.parts?.[0]?.text?.trim() || '';
+        } else if (typeof data === 'string') {
+          expression = data.trim();
+        }
+        
+        console.log('Extracted expression:', expression);
+        
+        if (!expression) {
+          console.error('No expression returned:', data);
+          return 'Could not parse the mathematical expression';
+        }
 
-      // Evaluate the expression using mathjs
-      return math.evaluate(expression).toString();
+        // 确保表达式是有效的数学表达式
+        if (!/^[\d\s\+\-\*\/\%\^\(\)\.]+$/.test(expression)) {
+          // 尝试从表达式文本中提取有效的数学表达式
+          const possibleExpression = expression.match(/[\d\s\+\-\*\/\%\^\(\)\.]+/);
+          if (possibleExpression) {
+            expression = possibleExpression[0].trim();
+          }
+        }
+        
+        // Evaluate the expression using mathjs
+        const result = math.evaluate(expression).toString();
+        console.log('Expression evaluated:', expression, '=', result);
+        return result;
+      } catch (error) {
+        console.error('Expression parsing error:', error, 'Data:', data);
+        return 'Error processing the expression';
+      }
     } catch (error) {
       console.error('AI processing error:', error);
       return 'Error processing the request';
