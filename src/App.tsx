@@ -20,7 +20,7 @@ function App() {
         headers: {
           'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://smart-calculate.vercel.app',
+          'HTTP-Referer': 'https://xianren9527.github.io/SmartCalculate/',
           'X-Title': 'Smart Calculator'
         },
         body: JSON.stringify({
