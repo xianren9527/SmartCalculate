@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Calculator, Brain, History, Backspace } from 'lucide-react';
 import * as math from 'mathjs';
 
-const OPENROUTER_API_KEY = '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';
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
 
 function App() {
   const [input, setInput] = useState('');
