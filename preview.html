@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Calculator - Preview</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/mathjs@12.4.0/lib/browser/math.js"></script>
+  <style>
+    .calculator-btn {
+      transition: all 0.1s ease;
+    }
+    .calculator-btn:active {
+      transform: scale(0.95);
+    }
+    .backspace-icon {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      position: relative;
+    }
+    .backspace-icon:before {
+      content: "←";
+      font-size: 20px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">Smart Calculator</h1>
+      <p class="text-gray-600">Natural language calculations made simple</p>
+    </header>
+
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+      <div class="flex gap-4 mb-6">
+        <button id="ai-mode-btn" class="flex items-center gap-2 px-4 py-2 rounded-lg transition bg-blue-500 text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5V5a2 2 0 0 0 2 2h.5A2.5 2.5 0 0 1 17 9.5a2.5 2.5 0 0 1-2.5 2.5.5.5 0 0 0-.5.5v.5a2.5 2.5 0 0 1-2.5 2.5 2.5 2.5 0 0 1-2.5-2.5v-.5a.5.5 0 0 0-.5-.5A2.5 2.5 0 0 1 6 9.5 2.5 2.5 0 0 1 8.5 7H9a2 2 0 0 0 2-2v-.5A2.5 2.5 0 0 1 9.5 2Z"/><path d="M6 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2"/><path d="M16 12a2 2 0 0 1 2 2c0 1.1-.9 2-2 2a2 2 0 0 0-2 2c0 1.1-.9 2-2 2a2 2 0 0 1-2-2"/></svg>
+          AI Mode
+        </button>
+        <button id="calculator-mode-btn" class="flex items-center gap-2 px-4 py-2 rounded-lg transition bg-gray-100 text-gray-700 hover:bg-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
+          Calculator Mode
+        </button>
+      </div>
+
+      <div id="ai-mode" class="mode-container">
+        <div class="mb-4">
+          <textarea id="ai-input" placeholder="Ask anything... (e.g., 'What is the sum of fifteen percent of eighty and twenty five?')" class="w-full h-24 p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+        </div>
+
+        <button id="ai-calculate-btn" class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition">
+          Calculate
+        </button>
+      </div>
+
+      <div id="calculator-mode" class="mode-container hidden">
+        <div class="mt-4">
+          <div class="bg-gray-100 p-4 rounded-lg mb-4">
+            <p id="calculator-display" class="text-right text-xl font-mono overflow-x-auto">0</p>
+          </div>
+          <div class="grid grid-cols-4 gap-2">
+            <!-- Row 1 -->
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="7">7</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="8">8</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="9">9</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="/">/</button>
+            
+            <!-- Row 2 -->
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="4">4</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="5">5</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="6">6</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="*">*</button>
+            
+            <!-- Row 3 -->
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="1">1</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="2">2</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="3">3</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="-">-</button>
+            
+            <!-- Row 4 -->
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="0">0</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value=".">.</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-blue-500 text-white hover:bg-blue-600" data-value="=">=</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="+">+</button>
+            
+            <!-- Row 5 -->
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="(">(</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value=")">)</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="%">%</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-gray-200 hover:bg-gray-300" data-value="^">^</button>
+            
+            <!-- Row 6 -->
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-red-500 text-white hover:bg-red-600" data-value="C">C</button>
+            <button class="calculator-btn py-3 px-4 rounded-lg text-center bg-yellow-500 text-white hover:bg-yellow-600 col-span-3" data-value="backspace"><span class="backspace-icon"></span></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-container" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">Result</h2>
+        <p id="result" class="text-2xl font-bold text-blue-600"></p>
+      </div>
+    </div>
+
+    <div id="history-container" class="bg-white rounded-2xl shadow-lg p-6 hidden">
+      <div class="flex items-center gap-2 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history text-gray-600"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+        <h2 class="text-xl font-semibold text-gray-800">History</h2>
+      </div>
+      <div id="history-items" class="space-y-4">
+        <!-- History items will be added here dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const aiModeBtn = document.getElementById('ai-mode-btn');
+    const calculatorModeBtn = document.getElementById('calculator-mode-btn');
+    const aiModeContainer = document.getElementById('ai-mode');
+    const calculatorModeContainer = document.getElementById('calculator-mode');
+    const aiInput = document.getElementById('ai-input');
+    const aiCalculateBtn = document.getElementById('ai-calculate-btn');
+    const calculatorDisplay = document.getElementById('calculator-display');
+    const calculatorButtons = document.querySelectorAll('.calculator-btn');
+    const resultContainer = document.getElementById('result-container');
+    const resultElement = document.getElementById('result');
+    const historyContainer = document.getElementById('history-container');
+    const historyItems = document.getElementById('history-items');
+
+    // State
+    let currentMode = 'ai';
+    const history = [];
+
+    // Mode Switching
+    aiModeBtn.addEventListener('click', () => {
+      currentMode = 'ai';
+      aiModeBtn.classList.remove('bg-gray-100', 'text-gray-700');
+      aiModeBtn.classList.add('bg-blue-500', 'text-white');
+      calculatorModeBtn.classList.remove('bg-blue-500', 'text-white');
+      calculatorModeBtn.classList.add('bg-gray-100', 'text-gray-700');
+      aiModeContainer.classList.remove('hidden');
+      calculatorModeContainer.classList.add('hidden');
+    });
+
+    calculatorModeBtn.addEventListener('click', () => {
+      currentMode = 'calculator';
+      calculatorModeBtn.classList.remove('bg-gray-100', 'text-gray-700');
+      calculatorModeBtn.classList.add('bg-blue-500', 'text-white');
+      aiModeBtn.classList.remove('bg-blue-500', 'text-white');
+      aiModeBtn.classList.add('bg-gray-100', 'text-gray-700');
+      calculatorModeContainer.classList.remove('hidden');
+      aiModeContainer.classList.add('hidden');
+    });
+
+    // Calculator Logic
+    calculatorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const value = button.getAttribute('data-value');
+        handleCalcButtonClick(value);
+      });
+    });
+
+    function handleCalcButtonClick(value) {
+      if (value === 'C') {
+        calculatorDisplay.textContent = '0';
+      } else if (value === '=') {
+        try {
+          const expression = calculatorDisplay.textContent;
+          const result = math.evaluate(expression).toString();
+          resultElement.textContent = result;
+          resultContainer.classList.remove('hidden');
+          addToHistory(expression, result);
+        } catch (error) {
+          resultElement.textContent = 'Invalid expression';
+          resultContainer.classList.remove('hidden');
+        }
+      } else if (value === 'backspace') {
+        const display = calculatorDisplay.textContent;
+        calculatorDisplay.textContent = display.length > 1 ? display.slice(0, -1) : '0';
+      } else {
+        const display = calculatorDisplay.textContent;
+        calculatorDisplay.textContent = display === '0' ? value : display + value;
+      }
+    }
+
+    // AI Calculate
+    aiCalculateBtn.addEventListener('click', () => {
+      const input = aiInput.value.trim();
+      if (!input) return;
+
+      // This is a simulation since we can't actually call the API
+      aiCalculateBtn.textContent = 'Calculating...';
+      aiCalculateBtn.disabled = true;
+
+      // Simulate API call delay
+      setTimeout(() => {
+        let result;
+        try {
+          // Simplified simulation - in a real app, this would call the API
+          if (input.includes('percent') || input.includes('%')) {
+            result = '12'; // Simulated result
+          } else {
+            result = '42'; // Default simulated result
+          }
+          
+          resultElement.textContent = result;
+          resultContainer.classList.remove('hidden');
+          addToHistory(input, result);
+        } catch (error) {
+          resultElement.textContent = 'An error occurred';
+          resultContainer.classList.remove('hidden');
+        }
+        
+        aiCalculateBtn.textContent = 'Calculate';
+        aiCalculateBtn.disabled = false;
+      }, 1500);
+    });
+
+    // History
+    function addToHistory(input, result) {
+      history.push({ input, result });
+      renderHistory();
+    }
+
+    function renderHistory() {
+      if (history.length === 0) {
+        historyContainer.classList.add('hidden');
+        return;
+      }
+      
+      historyContainer.classList.remove('hidden');
+      historyItems.innerHTML = '';
+      
+      history.forEach((item, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'p-3 bg-gray-50 rounded-lg';
+        historyItem.innerHTML = `
+          <p class="text-gray-600 mb-1">${item.input}</p>
+          <p class="text-blue-600 font-semibold">${item.result}</p>
+        `;
+        historyItems.appendChild(historyItem);
+      });
+    }
+  </script>
+</body>
+</html> 
